@@ -4,14 +4,18 @@ import asyncio
 import os
 from zep_cloud.client import Zep
 
-API_KEY = os.environ.get("ZEP_API_KEY")
-client = Zep(api_key=API_KEY)
+# Client init moved after settings import
 
 
 # Your services
 # from services.zep_service import zep_service
 from services.anam_service import anam_service
 from config.settings import settings
+
+# Initialize Zep Client with key from settings (which loads .env)
+# Also checks st.secrets for production deployment compatibility
+zep_api_key = st.secrets.get("ZEP_API_KEY", settings.zep_api_key)
+client = Zep(api_key=zep_api_key)
 
 # Get Backend URL from secrets (prod) or settings (dev/env)
 # Ensure no trailing slash for consistency
