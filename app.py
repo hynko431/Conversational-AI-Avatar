@@ -13,6 +13,10 @@ client = Zep(api_key=API_KEY)
 from services.anam_service import anam_service
 from config.settings import settings
 
+# Get Backend URL from secrets (prod) or default to localhost (dev)
+# Ensure no trailing slash for consistency
+BACKEND_URL = st.secrets.get("BACKEND_URL", "http://localhost:8000").rstrip("/")
+
 # -------------------------------
 # STREAMLIT UI CONFIG
 # -------------------------------
@@ -255,7 +259,7 @@ if st.session_state.session_id:
           content: msg.content,
         }}));
 
-        console.log('Sending request to backend:', `http://localhost:8000/llm/stream?session_id=${{sessionId}}`);
+        console.log('Sending request to backend:', `{BACKEND_URL}/llm/stream?session_id=${{sessionId}}`);
 
         // Create a streaming talk session FIRST
         const talkStream = anamClient.createTalkMessageStream();
@@ -266,7 +270,7 @@ if st.session_state.session_id:
 
         // Call our FastAPI backend with Zep integration
         const response = await fetch(
-          `http://localhost:8000/llm/stream?session_id=${{sessionId}}`,
+          `{BACKEND_URL}/llm/stream?session_id=${{sessionId}}`,
           {{
             method: "POST",
             headers: {{ "Content-Type": "application/json" }},
@@ -381,7 +385,7 @@ if st.session_state.session_id:
         // Test backend connectivity
         console.log('Testing backend connection...');
         try {{
-          const healthCheck = await fetch('http://localhost:8000/health');
+          const healthCheck = await fetch('{BACKEND_URL}/health');
           if (healthCheck.ok) {{
             console.log('Backend is reachable');
           }} else {{
