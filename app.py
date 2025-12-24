@@ -13,9 +13,9 @@ client = Zep(api_key=API_KEY)
 from services.anam_service import anam_service
 from config.settings import settings
 
-# Get Backend URL from secrets (prod) or default to localhost (dev)
+# Get Backend URL from secrets (prod) or settings (dev/env)
 # Ensure no trailing slash for consistency
-BACKEND_URL = st.secrets.get("BACKEND_URL", "http://localhost:8000").rstrip("/")
+BACKEND_URL = st.secrets.get("BACKEND_URL", settings.backend_url).rstrip("/")
 
 # -------------------------------
 # STREAMLIT UI CONFIG

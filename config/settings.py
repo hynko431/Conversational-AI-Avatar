@@ -19,6 +19,10 @@ class Settings(BaseSettings):
     # Zep Config
     zep_docs_user_id: str
 
+    # Deployment URLs
+    frontend_url: str = "http://localhost:8501"
+    backend_url: str = "http://localhost:8000"
+
     class Config:
         env_file = ".env"
         case_sensitive = False

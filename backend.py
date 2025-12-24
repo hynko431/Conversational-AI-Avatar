@@ -45,7 +45,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://conversational-ai-avatar-demo.streamlit.app",
+        settings.frontend_url,
         "http://localhost:8501",
         "http://localhost:8000",
     ],
