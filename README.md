@@ -49,8 +49,8 @@ This project is designed to be deployed as two separate services:
     | `ZEP_API_KEY` | Your Zep Cloud API Key |
     | `OPENROUTER_API_KEY` | Your LLM provider key (OpenRouter/Gemini) |
     | `ZEP_DOCS_USER_ID` | User ID for Zep Knowledge Graph docs |
-    | `ANAM_AVATAR_ID` | `30fa96d0-26c4-4e55-94a0-517025942e18` (or your custom ID) |
-    | `ANAM_VOICE_ID` | `6bfbe25a-979d-40f3-a92b-5394170af54b` (or your custom ID) |
+    | `ANAM_AVATAR_ID` | (Optional) Custom Avatar ID. Defaults to `30fa...` |
+    | `ANAM_VOICE_ID` | (Optional) Custom Voice ID. Defaults to `6bfb...` |
     | `FRONTEND_URL` | Check Step 2 (e.g., `https://your-app.streamlit.app`) |
 
     > **Note**: After the first deployment, Render will give you a backend URL (e.g., `https://project.onrender.com`). You will need this for the Frontend.
