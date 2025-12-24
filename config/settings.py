@@ -13,8 +13,8 @@ class Settings(BaseSettings):
 
     # Anam AI Configuration (for avatar/voice only - we use custom LLM)
     anam_api_base_url: str = "https://api.anam.ai"
-    anam_avatar_id: str = "30fa96d0-26c4-4e55-94a0-517025942e18"  # Default
-    anam_voice_id: str = "6bfbe25a-979d-40f3-a92b-5394170af54b"   # Default
+    anam_avatar_id: str
+    anam_voice_id: str
 
     # Zep Config
     zep_docs_user_id: str

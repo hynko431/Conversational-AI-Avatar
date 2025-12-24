@@ -1,62 +1,132 @@
-# AI Avatar Demo powered by Zep
+# Conversational AI Avatar Demo
 
-A conversational AI assistant powered by [Zep](https://www.getzep.com/) knowledge graphs, custom LLM integration, and Anam AI avatar—creating natural conversations with memory and context-aware responses.
+A real-time Conversational AI Avatar using **Anam.ai** (for digital human persona), **Zep Cloud** (for long-term memory & knowledge graph), and **Gemini 2.0 / OpenAI** (LLM).
 
-We use:
-
-- [Zep](https://www.getzep.com/) for conversation memory and knowledge graph management
-- Anam AI for realistic avatar and voice interactions
-- OpenRouter with Minimax M2 (LLM)
-- FastAPI for streaming backend
-- Streamlit to wrap the logic in an interactive UI
+This project demonstrates a split-stack architecture:
+- **Frontend**: Streamlit (User Interface & Avatar Rendering)
+- **Backend**: FastAPI (Orchestrates Zep, LLM, and Anam logic)
 
 ## Architecture
 
-![Architecture Diagram](assets/architecture.gif)
+![Architecture](assets/architecture.gif)
 
-## Set Up
+1.  **Streamlit Client**: Renders the Anam video stream and handles user sessions.
+2.  **FastAPI Backend**:
+    *   Receives conversation history.
+    *   Stores `user` messages in Zep.
+    *   Retrieves context (Knowledge Graph + Memory) from Zep.
+    *   Calls LLM (Gemini/OpenAI) with grounded context.
+    *   Streams LLM response chunks back to frontend via SSE (Server-Sent Events).
+    *   Frontend pipes these chunks to the Anam Persona for lip-synced speech.
 
-Run these commands in project root
+---
 
-### Install Dependencies
+## 🚀 Deployment Guide
 
-```bash
-uv sync
-```
+This project is designed to be deployed as two separate services:
+1.  **Backend** (FastAPI) on [Render](https://render.com)
+2.  **Frontend** (Streamlit) on [Streamlit Community Cloud](https://streamlit.io/cloud)
 
-### Configure Environment
+### 1. Backend Deployment (Render)
 
-Create a `.env` file in the project root, similar to `.env.example`, and add your API keys:
+1.  Create a new **Web Service** on Render connected to this repository.
+2.  **Root Directory**: `.` (current repository root).
+3.  **Build Command**:
+    ```bash
+    pip install .
+    ```
+    *OR if using uv:* `pip install uv && uv sync`
+4.  **Start Command**:
+    ```bash
+    uvicorn backend:app --host 0.0.0.0 --port $PORT
+    ```
+5.  **Environment Variables**:
+    Add the following variables in the Render Dashboard:
 
-[Get your Zep API keys here](https://www.getzep.com/)
+    | Variable | Value / Description |
+    | :--- | :--- |
+    | `ANAM_API_KEY` | Your Anam.ai API Key |
+    | `ZEP_API_KEY` | Your Zep Cloud API Key |
+    | `OPENROUTER_API_KEY` | Your LLM provider key (OpenRouter/Gemini) |
+    | `ZEP_DOCS_USER_ID` | User ID for Zep Knowledge Graph docs |
+    | `ANAM_AVATAR_ID` | `30fa96d0-26c4-4e55-94a0-517025942e18` (or your custom ID) |
+    | `ANAM_VOICE_ID` | `6bfbe25a-979d-40f3-a92b-5394170af54b` (or your custom ID) |
+    | `FRONTEND_URL` | Check Step 2 (e.g., `https://your-app.streamlit.app`) |
 
-### Ingest Data
+    > **Note**: After the first deployment, Render will give you a backend URL (e.g., `https://project.onrender.com`). You will need this for the Frontend.
 
-To populate the knowledge graph with your data:
+### 2. Frontend Deployment (Streamlit Cloud)
 
-```bash
-python scripts/ingest_to_graph.py
-```
+1.  Deploy a new app on Streamlit Community Cloud using this repository.
+2.  **Main file path**: `app.py`
+3.  **Secrets / Environment Variables**:
+    Go to **App Settings -> Secrets** and add:
 
-### Run the Application
+    ```toml
+    ZEP_API_KEY = "your_zep_key_here"
+    BACKEND_URL = "https://your-project-name.onrender.com"
+    ```
+    *(Note: `BACKEND_URL` is the URL of your deployed Render service from Step 1)*
 
-Start the backend server:
+### 3. Final Wiring
 
-```bash
-uvicorn backend:app --port 8000 --reload
-```
+1.  Copy your **Streamlit App URL** (e.g., `https://my-avatar-demo.streamlit.app`).
+2.  Go back to your **Render Dashboard**.
+3.  Update the `FRONTEND_URL` environment variable with this Streamlit URL.
+4.  **Redeploy** the Release in Render.
 
-In a separate terminal, start the frontend:
+---
 
-```bash
-streamlit run app.py
-```
+## 🛠 Local Development
 
-## Usage
+### Prerequisites
+- Python 3.12+
+- `uv` (recommended) or `pip`
+- API Keys for Anam, Zep, and OpenRouter
 
-1. Enter your session unique name in the sidebar
-2. Click "Initialize New Session" to create a Zep session
-3. Click "Start Conversation" to interact with the avatar
-4. The assistant uses knowledge graph context and conversation history for personalized responses
+### Setup
 
-Note: To understand Zep better, we recommend going through the Jupyter notebook (`zep_demo.ipynb`) provided in the project root.
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/hynko431/Conversational-AI-Avatar.git
+    cd Conversational-AI-Avatar
+    ```
+
+2.  **Install dependencies**:
+    ```bash
+    uv sync
+    # OR
+    pip install -r pyproject.toml
+    ```
+
+3.  **Environment Setup**:
+    Copy `.env.example` to `.env` and fill in your keys:
+    ```bash
+    cp .env.example .env
+    ```
+
+    Ensure your `.env` for local development has:
+    ```
+    FRONTEND_URL=http://localhost:8501
+    BACKEND_URL=http://localhost:8000
+    ```
+
+### Running Locally
+
+1.  **Start the Backend**:
+    ```bash
+    uvicorn backend:app --reload --port 8000
+    ```
+
+2.  **Start the Frontend**:
+    ```bash
+    streamlit run app.py
+    ```
+
+3.  Open `http://localhost:8501` in your browser.
+
+---
+
+## License
+
+MIT License
